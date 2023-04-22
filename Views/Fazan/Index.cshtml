@@ -1,0 +1,10 @@
+﻿@model IEnumerable<string>
+
+
+<div class="container" style="padding:30px;">
+    @foreach (var cuv in Model)
+    {
+        @Html.ActionLink(cuv, "Game", new { controller = "Fazan", language = cuv }, new { @class = "btn btn-danger", @style = "width:30%; margin: 10px; " });
+    }
+
+</div>

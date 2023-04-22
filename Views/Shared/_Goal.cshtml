@@ -1,0 +1,27 @@
+﻿
+@model IEnumerable<LanguageBuddy.Models.Goal>
+
+
+
+<div class="container">
+
+    @foreach( var goal in Model )
+    {
+        <div class="col-lg-4">
+
+            <div class="panel panel-info" >
+                <div class="panel-heading">@goal.Profile.LastName @goal.Profile.FirstName's Goal</div>
+                <div class="panel-body"> @goal.Language.Name </div>
+                <div class="panel-footer">
+
+                    @if (User.Identity.Name == goal.Profile.UserAccount.Email)
+                    {
+                        @Html.ActionLink("Delete", "Delete", new { controller = "Goal", id = goal.Id }, new { @class = "btn btn-danger" })
+                    }
+                </div>
+
+            </div>
+        </div>
+    }
+</div>
+

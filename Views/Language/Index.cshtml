@@ -1,0 +1,13 @@
+﻿@model IEnumerable<LanguageBuddy.Models.Language>
+
+@{
+    ViewBag.Title = "Languages";
+}
+
+<h2>Languages</h2>
+@Html.Partial("_Language", Model);
+
+@if (User.IsInRole("Admin"))
+{
+    @Html.ActionLink("Create", "Create", null, new { @class = "btn btn-primary" })
+}

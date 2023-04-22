@@ -1,0 +1,59 @@
+﻿@model IEnumerable<LanguageBuddy.Models.Tip>
+
+
+
+@foreach (var item in Model)
+{
+
+    <div class="">
+        <div class="panel panel-info">
+
+            <div class="panel-heading">
+                @item.Attentions.Where(f => f.Value == 1).ToList().Count()
+
+                -@item.Attentions.Where(f => f.Value == -1).ToList().Count()
+                |
+                @Html.DisplayFor(modelItem => item.Language.Name)
+            </div>
+
+            <div class="panel-body">
+
+                <div>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </div>
+            </div>
+
+
+            <div class="panel-footer">
+                @if (User.Identity.IsAuthenticated )
+                {
+                    @Html.ActionLink("Like", "GiveAtention", new { controller = "Tip", id = item.Id, value = 1, }, new { @class = "btn btn-primary likelink" })
+                    @Html.ActionLink("Dislike", "GiveAtention", new { controller = "Tip", id = item.Id, value = -1 }, new { @class = "btn btn-danger likelink" })
+                    if (User.IsInRole("Admin") || item.Profile.UserAccount.Email == User.Identity.Name)
+                    {
+                        @Html.ActionLink("Edit ", "Edit", new { controller = "Tip", id = item.Id }, new { @class = "btn btn-warning " })
+                        @Html.ActionLink("Delete ", "Delete", new { controller = "Tip", id = item.Id }, new { @class = "btn btn-danger " })
+                    }
+                }
+            </div>
+
+
+        </div>
+    </div>
+
+}
+
+<script>
+
+    $(".likelink").click(function (e) {
+
+        e.preventDefault();
+        $.ajax({
+
+            url: $(this).attr("href")
+
+        });
+
+    });
+
+</script>

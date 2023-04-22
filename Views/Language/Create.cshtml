@@ -1,0 +1,42 @@
+﻿@model LanguageBuddy.Models.Language
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Create</h2>
+
+@using (Html.BeginForm("Create", "Language", FormMethod.Post, new { @class = "form-group" }))
+{
+    <div class="row">
+        <div class="col-lg-2">
+            @Html.NameFor(p => p.Name)
+        </div>
+        <div class="col-lg-6">
+            @Html.TextBoxFor(p => p.Name, new { @class = "form-control" })
+        </div>
+        @Html.ValidationMessageFor( p => p.Name )
+    </div>
+
+    <div class="row">
+        <div class="col-lg-2">
+            @Html.NameFor(p => p.Description)
+        </div>
+        <div class="col-lg-6">
+            @Html.TextBoxFor(p => p.Description, new { @class = "form-control" })
+        </div>
+
+        @Html.ValidationMessageFor(p => p.Description)
+    </div>
+
+    <div class="row">
+        <div class="col-lg-2">
+            @Html.NameFor(p => p.ImageUrl)
+        </div>
+        <div class="col-lg-6">
+            @Html.TextBoxFor(p => p.ImageUrl, new { @class = "form-control" })
+        </div>
+        @Html.ValidationMessageFor(p => p.ImageUrl)
+    </div>
+
+    <input type="submit" class="btn btn-primary">
+}

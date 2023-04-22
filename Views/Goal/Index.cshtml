@@ -1,0 +1,10 @@
+﻿@model IEnumerable<LanguageBuddy.Models.Goal>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Goals</h2>
+
+@Html.Partial("_Goal", Model)
+
+@Html.ActionLink("Add new", "Add", null, new { @class = "btn btn-primary" });

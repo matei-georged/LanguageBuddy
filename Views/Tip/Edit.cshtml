@@ -1,0 +1,33 @@
+﻿@model LanguageBuddy.Models.Tip
+
+<h2>Edit</h2>
+
+@using (@Html.BeginForm("Edit", "Tip", FormMethod.Post, new { @class = "form" }))
+{
+    @Html.HttpMethodOverride(HttpVerbs.Put)
+
+    @Html.HiddenFor(m => m.Id)
+
+    <div class="row form-group">
+
+        <div class="col-lg-2">
+            @Html.LabelFor(m => m.Description)
+        </div>
+        <div class="col-lg-6">
+            @Html.TextAreaFor(m => m.Description)
+        </div>
+        @Html.ValidationMessageFor(m => m.Description)
+    </div>
+
+    <div class="row form-group">
+        <div class="col-lg-2">
+            @Html.LabelFor(m => m.Language)
+        </div>
+        <div class="col-lg-6">
+            @Html.DropDownListFor(m => m.LanguageId, ViewBag.Languages as IEnumerable<SelectListItem>)
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+}
+

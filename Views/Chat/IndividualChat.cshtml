@@ -1,0 +1,315 @@
+﻿@model IEnumerable<LanguageBuddy.Models.ChatMessage>
+
+<div class="container" style="margin:10px; background-color:#DCECDB; height:7vh; padding:5px; text-align:center;">
+    @Html.ActionLink(
+        (string) ViewBag.parName,
+        "GetVisit",
+        new { controller = "Profile", id = (string) ViewBag.parId },
+        new { @style = "font-size:large; color:black;" }
+        )
+    <div class="uiunit" style="text-align:left;">
+        <label for="speakerMenu">Voice: </label>
+        <select id="speakerMenu">
+            <option value="ar-Arabic">Arabic</option>
+            <option value="de-German">German</option>
+            <option value="en-English">English</option>
+            <option value="es-Spanish">Spanish</option>
+            <option value="fr-French">French</option>
+        </select>
+    </div>
+</div>
+
+<div id="discussion" style="height:64vh; overflow-y:scroll; overflow-x:hidden; margin:20px;">
+    @foreach (var mes in Model)
+    {
+        if (mes.SenderId == ViewBag.selfid)
+        {
+            <div class="panel panel-default messSentDiv">
+                @if (mes.IsAudio == 1)
+                {
+                    <audio controls>
+                        <source src="@Url.Content("~/uploads/")@mes.Message " type="audio/mpeg" />
+                    </audio>
+                }
+                else
+                {
+                    @mes.Message
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="panel panel-danger messRecvDiv">
+                @if (mes.IsAudio == 1)
+                {
+                    <audio controls>
+                        <source src="@Url.Content("~/uploads/")@mes.Message " type="audio/mpeg" />
+                    </audio>
+                }
+                else
+                {
+                    @mes.Message
+                }
+            </div>
+        }
+
+    }
+</div>
+
+<div style="width:100%;">
+    <input type="text" id="message" class="input-lg" />
+    <input type="button" id="sendmessage" class="sendmessage" value="Send" class="btn" />
+    <button id="RECORD" class="sendmessage" style="background-color:green;">Record</button>
+</div>
+
+
+<style>
+
+    audio {
+        max-height: 100%;
+        max-width: 100%;
+        margin: auto;
+        object-fit: contain;
+    }
+
+    /* pentru scroll */
+    ::-webkit-scrollbar {
+        width: 5px;
+        bo: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 5px grey;
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: grey;
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    /*Pentru mesaje si butoane */
+    .messSentDiv {
+        min-height: 5vh;
+        width: 51%;
+        text-align: right;
+        float: right;
+        display: inline-block;
+        padding: 20px;
+        margin: 10px;
+        overflow-wrap: break-word;
+        border-radius: 16px;
+    }
+
+    .messRecvDiv {
+        min-height: 5vh;
+        width: 51%;
+        text-align: left;
+        float: left;
+        display: inline-block;
+        padding: 20px;
+        margin: 10px;
+        overflow-wrap: break-word;
+        border-radius: 16px;
+    }
+
+    #message {
+        resize: both;
+        width: 70%;
+        height: 5vh;
+        max-width: 100%;
+    }
+
+    .sendmessage {
+        resize: both;
+        width: 7%;
+        height: 5vh;
+        max-width: 100%;
+    }
+
+    @@media screen and (max-width: 992px) {
+        #message {
+            width: 50%;
+        }
+
+        .sendmessage {
+            width: 20%;
+        }
+
+        .messSentDiv {
+            width: 70%;
+        }
+
+        .messRecvDiv {
+            width: 70%;
+        }
+    }
+</style>
+
+@section scripts {
+    <script src="~/Scripts/jquery.signalR-2.4.2.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+            $('#discussion').animate({
+                scrollTop: $('#discussion').get(0).scrollHeight
+            }, 0);
+            AddAudioReader();
+        });
+
+        var chat = $.connection.chatHub;
+        $(function () {
+            chat.client.addNewMessageToPage = function (message, isAudio) {
+
+                if (isAudio == 1) {
+                    $('#discussion').append(
+                        '<div class="panel panel-danger messRecvDiv">' +
+                        '<audio controls><source src="' +
+                        @Url.Content("~/uploads/")+message +
+                        '" type="audio/mpeg" /></audio>' +
+                        '</div>'
+                    );
+                }
+                else {
+                    $('#discussion').append(
+                        '<div class="panel panel-danger messRecvDiv">' +
+                        htmlEncode(message) +
+                        '</div>'
+                    );
+                }
+
+                AddAudioReader();
+
+                $('#discussion').animate({
+                    scrollTop: $('#discussion').get(0).scrollHeight
+                }, 0);
+            };
+
+            $('#message').focus();
+            $.connection.hub.start().done(function () {
+                $('#sendmessage').click(function () {
+                    chat.server.connect('@ViewBag.selfid');
+
+                    chat.server.sendChatMessage('@ViewBag.parid', '@ViewBag.selfid', $('#message').val(), 0);
+                    $('#discussion').append(
+                        '<div class="panel panel-default messSentDiv" > ' +
+                        htmlEncode($('#message').val()) +
+                        '</div>'
+                    );
+
+                    AddAudioReader();
+
+                    $('#discussion').animate({
+                        scrollTop: $('#discussion').get(0).scrollHeight
+                    }, 0);
+
+                    $('#message').val('').focus();
+
+                });
+            });
+        });
+
+        function htmlEncode(value) {
+            var encodedValue = $('<div/>').text(value).html();
+            return encodedValue;
+        }
+
+        var record = document.getElementById('RECORD');
+        var isRecording = false;
+        var recordVideo;
+        var fileName;
+
+        record.onclick = function () {
+
+            if (isRecording) {
+                record.style.backgroundColor = 'green';
+                isRecording = false;
+                fileName = (Math.round(Math.random() * 99999999) + 99999999) + '.mp4';
+                recordVideo.stopRecording(function () {
+                    PostBlob(recordVideo.getBlob());
+                });
+                return;
+            }
+
+            isRecording = true;
+            record.style.backgroundColor = 'red';
+
+            navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
+            navigator.getUserMedia({
+                audio: true,
+            }, function (stream) {
+
+                recordVideo = RecordRTC(stream, {
+                    type: 'audio'
+                })
+
+                recordVideo.startRecording();
+
+            }, function (error) {
+                alert(error.toString());
+            });
+        };
+
+
+        function PostBlob(blob) {
+
+            var postData = new FormData();
+            postData.append('video-filename', fileName);
+            postData.append('video-blob', blob);
+
+            xhr('/Chat/PostRecordedAudioVideo', postData, function (fName) {
+
+                for (var i = 1; i < 1000000; ++i) { }
+
+                var path = @Url.Content("~/uploads/")+fileName
+                $('#discussion').append(
+                    '<div class="panel panel-danger messSentDiv">' +
+                    '<audio controls><source src="' +
+                    path +
+                    '" type="audio/mpeg" /></audio>' +
+                    '</div>'
+                );
+                chat.server.sendChatMessage('@ViewBag.parid', '@ViewBag.selfid', fileName, 1);
+
+            });
+
+        }
+
+        function xhr(url, data, callback) {
+            var request = new XMLHttpRequest();
+
+            request.onreadystatechange = function () {
+                if (request.readyState == 4 && request.status == 200) {
+                    callback(request.responseText);
+                }
+            };
+
+            request.open('POST', url);
+            request.send(data);
+        }
+
+        var speech = new SpeechSynthesisUtterance();
+        speech.lang = "en";
+
+        function AddAudioReader() {
+            $('.messSentDiv').off().on('click',function () {
+                speech.text = this.innerHTML;
+                speech.lang = document.getElementById("speakerMenu").value;
+                speechSynthesis.speak(speech);
+            });
+
+            $('.messRecvDiv').off().on('click',function () {
+                speech.text = this.innerHTML;
+                speech.lang = document.getElementById("speakerMenu").value;
+                speechSynthesis.speak(speech);
+            });
+        }
+
+    </script>
+}
