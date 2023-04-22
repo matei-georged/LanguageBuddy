@@ -1,0 +1,161 @@
+﻿@model IEnumerable<string>
+
+<div style="margin:10px;">
+    <input id="cuvant" type="text" />
+    <button id="guess">Guess</button>
+</div>
+<div style="width:100%; height:70vh; overflow-y:scroll;">
+    <div id="game"></div>
+</div>
+
+<style>
+    .gameWordComputer {
+        font-size: 3rem;
+        text-align: left;
+        width: 51%;
+        border-style: solid;
+        border-width: 1px;
+        border-color: red;
+        border-radius: 16px;
+        margin: 10px;
+        padding: 10px;
+        float: left;
+        overflow-wrap: break-word;
+        display: inline-block;
+        background-color: #FFF9FA;
+    }
+
+    .gameWordHuman {
+        font-size: 3rem;
+        text-align: right;
+        width: 51%;
+        border-style: solid;
+        border-width: 1px;
+        border-color: blue;
+        border-radius: 16px;
+        margin: 10px;
+        padding: 10px;
+        float: right;
+        overflow-wrap: break-word;
+        display: inline-block;
+        background-color: #F9FCFF;
+    }
+
+    ::-webkit-scrollbar {
+        width: 5px;
+        bo: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 5px grey;
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: grey;
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    #cuvant {
+        resize: both;
+        width: 70%;
+        height: 5vh;
+        max-width: 100%;
+    }
+
+    #guess {
+        resize: both;
+        width: 15%;
+        height: 5vh;
+        max-width: 100%;
+    }
+
+</style>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var ll = @Html.Raw(Json.Encode(Model));
+        var game_already = [];
+        
+        var D = new Array();
+
+        for (let i = 0; i < 256; ++i) {
+            D[i] = new Array();
+            for (let j = 0; j < 256; ++j) {
+                D[i][j] = new Array();
+            }
+        }
+
+        for (var idx in ll) {
+            var cuv = ll[idx];
+            if (cuv.length >= 2 && /^[a-zA-Z]+$/.test(cuv) ) {
+                D[cuv.charCodeAt(0)][cuv.charCodeAt(1)].push(cuv);
+            }
+        }
+ 
+        for (let i = 0; i < 256; ++i) {
+            for (let j = 0; j < 256; ++j) {
+                if (D[i][j].length > 0) {
+                    console.log(D[i][j]);
+                    D[i][j].sort(function (a, b) {
+                        var aa = a.slice(-2);
+                        var a_i = aa.charCodeAt(0);
+                        var a_j = aa.charCodeAt(1);
+
+                        var bb = b.slice(-2);
+                        var b_i = bb.charCodeAt(0);
+                        var b_j = bb.charCodeAt(1);
+                       
+                        return D[b_i][b_j].length - D[a_i][a_j].length;
+                    });
+
+                }
+            }
+        }
+
+        $('#guess').click(function () {
+            var cuv = $('#cuvant').val();
+
+            //cuvant nou folosit deja
+            if (game_already.indexOf(cuv) >= 0) {
+                alert("Can't use word twice");
+                return ;
+            }
+
+            //verifica ca userul foloseste un cuvant valid
+            if ( game_already.length > 0 ) {
+                if (!(cuv.slice(0, 2) === game_already[game_already.length - 1].substr(-2))) {
+                    alert("Wait, u cant use that ? ");
+                    return ;
+                }
+            }
+
+            var last_2 = cuv.slice(-2);
+            for (var idx in D[ last_2.charCodeAt(0) ][ last_2.charCodeAt(1)] ) {
+                var match = D[last_2.charCodeAt(0)][last_2.charCodeAt(1)][ idx ];
+
+
+                if (match.length >= 2) {
+                    if (game_already.indexOf(match) <= 0) {
+
+                        game_already.push(cuv);
+                        game_already.push(match);
+
+                        $('#game').append( '<div class="gameWordHuman">' + cuv + '</div>' );
+                        $('#game').append( '<div class="gameWordComputer">' + match + '</div>' );
+
+                        return;
+                    }
+                  }                
+            }
+
+            alert("You won !!! ");
+
+        });
+
+    });
+
+</script>

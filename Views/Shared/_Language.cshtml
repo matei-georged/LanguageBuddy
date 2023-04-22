@@ -1,0 +1,48 @@
+﻿@model IEnumerable<LanguageBuddy.Models.Language>
+
+<div class="container">
+
+    @foreach (var item in Model)
+    {
+
+        <div class="col-lg-4">
+            <div class="panel panel-info">
+
+                <div class="panel-heading">
+                    @Html.DisplayFor(modelItem => item.Name)
+                </div>
+
+                <div class="panel-body">
+
+
+                    <div class="col-md-3">
+                        <div style=" position: relative; overflow: hidden; padding-bottom: 100%;">
+                            <img src="@item.ImageUrl" class="img-responsive center-block" style="position:absolute;">
+                        </div>
+
+
+                    </div>
+
+
+                    <div>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </div>
+                </div>
+
+
+                <div class="panel-footer">
+                    @Html.ActionLink("Details ", "Details", new { controller = "Language", id = item.Id }, new { @class = "btn btn-primary " } )
+                    @if (User.IsInRole("Admin"))
+                    {
+                        @Html.ActionLink("Edit ", "Edit", new { controller = "Language", id = item.Id }, new { @class = "btn btn-warning " })
+                        @Html.ActionLink("Delete ", "Delete", new { controller = "Language", id = item.Id }, new { @class = "btn btn-danger " })
+                    }
+                </div>
+                
+
+            </div>
+        </div>
+
+    }
+
+</div>

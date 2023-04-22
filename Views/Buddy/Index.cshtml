@@ -1,0 +1,15 @@
+﻿@model List<LanguageBuddy.Models.Buddy>
+
+
+<div class="container" style="margin:10px;">
+
+    @foreach (var match in Model)
+    {
+        <div class="col-lg-4">
+            <h2 style="background-color:lightblue;">@match.WantedLnaguage</h2>
+            @Html.Partial("_CardProfile", match.Profile)
+        </div>
+
+    }
+
+</div>

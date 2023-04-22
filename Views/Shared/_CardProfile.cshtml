@@ -1,0 +1,24 @@
+﻿@model LanguageBuddy.Models.Profile
+
+<div class="panel panel-info">
+
+    <div class="panel-heading">
+         @Model.FirstName  @Model.LastName 
+    </div>
+
+    <div class="panel-body"  style="justify-content:center;">
+        <div>
+            @Html.DisplayFor( md => md.Description )
+        </div>
+    </div>
+
+
+    <div class="panel-footer">
+        @if (User.Identity.IsAuthenticated)
+        {
+            @Html.ActionLink("Chat", "IndividualChat", new { controller = "Chat", PartenerId = Model.ApplicationUserID }, new { @class = "btn btn-danger", @style = "height:inherit;" })
+        }
+        @Html.ActionLink("View Profile", "GetVisit", new { controller = "Profile", id = Model.ApplicationUserID }, new { @class = "btn btn-danger", @style = "height:inherit;" })
+    </div>
+
+</div>

@@ -1,0 +1,15 @@
+﻿@model IEnumerable<LanguageBuddy.Models.Profile>
+
+<div class="container">
+    @foreach (var usr in Model)
+    {
+
+            <div class="panel">
+        
+                <div class="panel-body" style="padding:0px;">
+                    @Html.Partial("_CardProfile", usr)
+                </div>
+            </div>
+
+    }
+</div>

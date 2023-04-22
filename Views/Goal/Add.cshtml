@@ -1,0 +1,30 @@
+﻿@model LanguageBuddy.Models.ViewModels.GoalViewModel
+@{
+    ViewBag.Title = "Add";
+}
+
+<h2>Your new goal</h2>
+
+@using (Html.BeginForm("Add", "Goal", FormMethod.Post ) ) 
+{   
+    <div class="row">
+
+        <div class="col-lg-2">
+            @Html.NameFor(m => m.SelectedLanguage)
+        </div>
+
+        <div class="col-lg-6">
+            @Html.DropDownListFor(m => m.SelectedLanguage, Model.Languages.Select(
+               x => new SelectListItem
+               {
+                   Text = x.Name,
+                   Value = x.Id.ToString()
+               }
+           ))
+        </div>
+        @Html.ValidationMessageFor( m => m.Goal )
+    </div>
+    <hr />
+    <button type="submit" class="btn btn-primary">Create</button>
+
+}

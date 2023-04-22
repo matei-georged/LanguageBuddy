@@ -1,0 +1,50 @@
+﻿@model LanguageBuddy.Models.ViewModels.LanguageDetailsViewModel
+@if (Model.Profiles.Count > 0)
+{
+    <div class="container">
+
+        <div id="prof_car" class="carousel slide" data-ride="carousel">
+
+            <div class="carousel-inner">
+
+                <div class="item active" style="margin-left:50px; margin-right:50px;">
+                    <div>
+                        @Html.Partial("_CardProfile", Model.Profiles.First())
+                    </div>
+                </div>
+
+
+                @foreach (var prof in Model.Profiles)
+                {
+                    <div class="item" style="margin-left: 50px; margin-right: 50px;">
+                        <div>
+                            @Html.Partial("_CardProfile", prof)
+                        </div>
+                    </div>
+                }
+
+            </div>
+
+            <a class="left carousel-control" href="#prof_car" data-slide="prev" style="width:20px;">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="right carousel-control" href="#prof_car" data-slide="next" style="width:20px;">
+                <span class="glyphicon glyphicon-chevron-right"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
+    </div>
+}
+
+
+<div class="container">
+
+    <h3><a href="#details_tips" data-toggle="collapse"> Posts </a></h3>
+    <hr />
+
+    <div id="details_tips" class="collapse in">
+        @Html.Partial("_Tip", Model.Tips)
+    </div>
+
+</div>

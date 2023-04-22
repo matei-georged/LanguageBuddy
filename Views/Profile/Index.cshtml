@@ -1,0 +1,33 @@
+﻿@model LanguageBuddy.Models.Profile
+
+@{
+    ViewBag.Title = "View";
+}
+
+
+<h1>Profile</h1>
+<div class="container" style="margin:0px; margin-bottom:10px; padding:0px;">
+
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ApplicationUserID }, new { @class = "btn btn-danger" })
+    @if (User.Identity.Name == Model.UserAccount.Email)
+    {
+        @Html.ActionLink("Add Goal", "Add", new { controller = "Goal" }, new { @class = "btn btn-danger", @style = "height:inherit;" })
+    }
+</div>
+
+@Html.Partial("_Profile", Model)
+
+
+
+<h3><a href="#profile_languages" data-toggle="collapse"> Languages </a> </h3>
+<hr>
+<div id="profile_languages" class="container collapse in">
+    @Html.Partial("_Language", Model.Languages);
+</div>
+
+
+<h3><a href="#profile_goals" data-toggle="collapse"> Goals </a> </h3>
+<hr>
+<div id="profile_goals" class="container collapse in">
+    @Html.Partial("_Goal", Model.Goals);
+</div>

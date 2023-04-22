@@ -1,0 +1,24 @@
+﻿@model LanguageBuddy.Models.Profile
+
+@{
+    ViewBag.Title = "View";
+}
+
+
+<h1>Profile</h1>
+
+@Html.Partial("_Profile", Model)
+
+
+<h3><a href="#profile_languages" data-toggle="collapse"> Languages </a> </h3>
+<hr>
+<div id="profile_languages" class="container collapse in">
+    @Html.Partial("_Language", Model.Languages);
+</div>
+
+
+<h3><a href="#profile_goals" data-toggle="collapse"> Goals </a> </h3>
+<hr>
+<div id="profile_goals" class="container collapse in">
+    @Html.Partial("_Goal", Model.Goals);
+</div>
